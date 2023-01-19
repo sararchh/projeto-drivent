@@ -6,7 +6,6 @@ import { createEnrollmentSchema } from "@/schemas";
 const enrollmentsRouter = Router();
 
 enrollmentsRouter
-  .get("/enrollments/cep", getAddressFromCEP)
   .get("/cep", getAddressFromCEP)
   .all("/*", authenticateToken)
   .get("/", getEnrollmentByUser)

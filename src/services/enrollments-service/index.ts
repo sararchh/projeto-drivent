@@ -51,11 +51,9 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   const enrollment = exclude(params, "address");
   const address = getAddressForUpsert(params.address);
 
-  //TODO - Verificar se o CEP é válido
+  const validateCep =  await getAddressFromCEP(address.cep);
 
-  const validateCep =  getAddressFromCEP(address.cep);
-
-  if(!validateCep) {
+  if(validateCep.uf === undefined) {
     throw notFoundError();
   }
 
