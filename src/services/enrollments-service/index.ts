@@ -19,7 +19,7 @@ async function getAddressFromCEP(cep: string) {
     cidade: result.data.localidade,
     uf: result.data.uf,
   };
-  
+
   return obj;
 }
 
@@ -51,7 +51,12 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   const enrollment = exclude(params, "address");
   const address = getAddressForUpsert(params.address);
 
-  //TODO - Verificar se o CEP é válido
+  const validateCep =  await getAddressFromCEP(address.cep);
+
+  if(validateCep.uf === undefined) {
+    throw notFoundError();
+  }
+
   const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"));
 
   await addressRepository.upsert(newEnrollment.id, address, address);
