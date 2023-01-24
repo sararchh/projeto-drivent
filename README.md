@@ -20,7 +20,11 @@ npm i
 5. Run all migrations
 
 ```bash
-npm run dev:migration:run
+
+// npm run dev:migration:run
+
+npm run migration:run
+
 ```
 
 6. Seed db
