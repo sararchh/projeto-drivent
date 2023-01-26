@@ -17,6 +17,20 @@ async function main() {
   }
 
   console.log({ event });
+
+  let ticketType = await prisma.ticketType.findFirst();
+  if (!ticketType) {
+    ticketType = await prisma.ticketType.create({
+      data: {
+        name: "Driven.t",
+        price: 10,
+        isRemote: true,
+        includesHotel: true,
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
 }
 
 main()
