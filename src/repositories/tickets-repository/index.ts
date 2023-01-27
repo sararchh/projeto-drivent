@@ -29,9 +29,7 @@ type TicketsProps = {
 }
 
 async function findMany() {
-  const tickets = await prisma.ticketType.findMany();
-
-  return tickets as TicketTypeProps[];
+  return prisma.ticketType.findMany();
 }
 
 async function insertOne(userId: number, ticketTypeId: number) {
