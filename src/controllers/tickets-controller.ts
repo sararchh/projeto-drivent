@@ -27,9 +27,6 @@ export async function insertOne(req: Request, res: Response) {
 
     return res.status(httpStatus.CREATED).send(insertTicket);
   } catch (error) {
-    if (error.name === "NotFoundError") {
-      return res.status(httpStatus.BAD_REQUEST).send(error);
-    }
     return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
