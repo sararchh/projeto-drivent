@@ -24,7 +24,7 @@ export async function findByTicketId(req: Request, res: Response) {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
     }
 
-    return res.status(httpStatus.BAD_REQUEST).send(error);
+    return res.status(httpStatus.NOT_FOUND).send(error);
   }
 }
 
@@ -37,10 +37,12 @@ export async function storePayments(req: Request, res: Response) {
 
     return res.status(httpStatus.OK).send(storePayments);
   } catch (error) {
-    console.log(error);
-
     if (error.name === "UnauthorizedError") {
       return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
+
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
     }
 
     return res.status(httpStatus.NOT_FOUND).send(error);

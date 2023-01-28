@@ -66,7 +66,23 @@ export async function storePayments(payments: TicketPostProps, userId: number) {
     }
   });
 
-  if (searchTicket === null) {
+  const searchTicketByID = await prisma.ticket.findFirst({
+    where: {
+      id: payments.ticketId
+    }
+  });
+
+  if (searchTicketByID === null) {
+    throw notFoundError();
+  }
+
+  const validateTicketAndUser = await prisma.ticket.findFirst({
+    where: {
+      enrollmentId: searchEnrollment.id
+    }
+  });
+
+  if (validateTicketAndUser === null) {
     throw unauthorizedError();
   }
 
@@ -76,7 +92,7 @@ export async function storePayments(payments: TicketPostProps, userId: number) {
     }
   });
 
-  const cardLastDigits = payments.cardData.number.substring(payments.cardData.number.length -4);
+  const cardLastDigits = payments.cardData.number.substring(payments.cardData.number.length - 4);
 
   const createTicket = await prisma.payment.create({
     data: {
@@ -84,6 +100,15 @@ export async function storePayments(payments: TicketPostProps, userId: number) {
       value: searchTicketType.price,
       cardIssuer: payments.cardData.issuer,
       cardLastDigits: cardLastDigits,
+    }
+  });
+
+  const updatedTicketStatus = await prisma.ticket.update({
+    where: {
+      id: Number(payments.ticketId)
+    },
+    data: {
+      status: "PAID"
     }
   });
 
