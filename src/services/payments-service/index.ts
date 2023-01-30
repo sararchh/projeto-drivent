@@ -1,21 +1,64 @@
-import paymentsRepository from "@/repositories/payments-repository";
-import { TicketPostProps } from "@/protocols";
 
-export async function findByTicketId(ticketId: string, userId: number) {
-  const searchPayments = await paymentsRepository.findByTicketId(ticketId, userId);
+import { notFoundError, unauthorizedError } from "@/errors";
+import paymentRepository, { PaymentParams } from "@/repositories/payment-repository";
+import ticketRepository from "@/repositories/ticket-repository";
+import enrollmentRepository from "@/repositories/enrollment-repository";
 
-  return searchPayments;
+async function verifyTicketAndEnrollment(ticketId: number, userId: number) {
+  const ticket = await ticketRepository.findTickeyById(ticketId);
+
+  if (!ticket) {
+    throw notFoundError();
+  }
+  const enrollment = await enrollmentRepository.findById(ticket.enrollmentId);
+
+  if (enrollment.userId !== userId) {
+    throw unauthorizedError();
+  }
 }
 
-export async function storePayments(payments: TicketPostProps, userId: number) {
-  const searchPayments = await paymentsRepository.storePayments(payments, userId);
+async function getPaymentByTicketId(userId: number, ticketId: number) {
+  await verifyTicketAndEnrollment(ticketId, userId);
 
-  return searchPayments;
+  const payment = await paymentRepository.findPaymentByTicketId(ticketId);
+
+  if (!payment) {
+    throw notFoundError();
+  }
+  return payment;
 }
 
-const paymentsService = {
-  findByTicketId,
-  storePayments
+async function paymentProcess(ticketId: number, userId: number, cardData: CardPaymentParams) {
+  await verifyTicketAndEnrollment(ticketId, userId);
+
+  const ticket = await ticketRepository.findTickeWithTypeById(ticketId);
+
+  const paymentData = {
+    ticketId,
+    value: ticket.TicketType.price,
+    cardIssuer: cardData.issuer,
+    cardLastDigits: cardData.number.toString().slice(-4),
+  };
+
+  const payment = await paymentRepository.createPayment(ticketId, paymentData);
+
+  await ticketRepository.ticketProcessPayment(ticketId);
+
+  return payment;
+}
+
+export type CardPaymentParams = {
+  issuer: string,
+  number: number,
+  name: string,
+  expirationDate: Date,
+  cvv: number
+}
+
+const paymentService = {
+  getPaymentByTicketId,
+  paymentProcess,
 };
 
-export default paymentsService;
+export default paymentService;
+

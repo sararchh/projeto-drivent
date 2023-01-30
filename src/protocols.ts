@@ -9,7 +9,10 @@ export type ViaCEPAddress = {
   bairro: string,
   localidade: string,
   uf: string,
+
 };
+
+//Regra de Negócio
 
 export type AddressEnrollment = {
   logradouro: string,
@@ -38,3 +41,4 @@ export type TicketPostProps = {
     cvv: number
   }
 };
+

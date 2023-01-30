@@ -2,6 +2,8 @@
 
 Back-end for Driven.t, an event management solution.
 
+:)
+
 ## About
 
 Driven.t is a web browser application with which you can manage every single aspect of your event.
@@ -21,7 +23,11 @@ npm i
 
 ```bash
 
+
 // npm run dev:migration:run
+
+npm run migration:run
+
 
 npm run migration:run
 
