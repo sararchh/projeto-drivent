@@ -28,9 +28,28 @@ async function getHotels() {
 }
 
 async function getHotelsById(hotelId: number) {
-  // const response = await hotelsRepository.findFirst();
+  const searchHotels = await prisma.hotel.findMany({
+    where: {
+      id: hotelId
+    }
+  });
 
-  return 0;
+  const searchRoom = await prisma.room.findMany({
+    where: {
+      hotelId: hotelId
+    }
+  });
+
+  const obj = {
+    id: searchHotels[0].id,
+    name: searchHotels[0].name,
+    image: searchHotels[0].image,
+    createdAt: searchHotels[0].createdAt.toISOString(),
+    updatedAt: searchHotels[0].updatedAt.toISOString(),
+    Rooms: searchRoom
+  };
+  
+  return obj;
 }
 
 const hotelsRepository = {

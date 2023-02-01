@@ -8,17 +8,22 @@ export async function getHotels(req: Request, res: Response) {
 
     return res.status(httpStatus.OK).send(response);
   } catch (error) {
-    return res.status(httpStatus.NOT_FOUND).send({});
+    return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
 
 export async function getHotelsById(req: Request, res: Response) {
   try {
     const { hotelId } = req.params;
+
+    if (!hotelId) {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+
     const response = await hotelsService.getHotelsById(Number(hotelId));
 
-    return res.sendStatus(httpStatus.OK);
-  } catch (error) {
-    return res.status(httpStatus.NOT_FOUND).send({});
+    return res.status(httpStatus.OK).send(response);
+  } catch (error) {    
+    return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
