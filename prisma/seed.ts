@@ -32,6 +32,42 @@ async function main() {
     });
   }
 
+  let hotel = await prisma.hotel.findFirst();
+  if (!hotel) {
+    hotel = await prisma.hotel.create({
+      data: {
+        name: "Driven.t HOTEL",
+        image: "https://http.cat/200",
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
+
+  let room = await prisma.room.findFirst();
+  if (!room) {
+    room = await prisma.room.create({
+      data: {
+        name: "Driven.t HOTEL",
+        capacity: 20,
+        hotelId: 1,
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
+
+  let booking = await prisma.booking.findFirst();
+  if (!booking) {
+    booking = await prisma.booking.create({
+      data: {
+        userId: 4630,
+        roomId: 1,
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
 }
 
 main()
