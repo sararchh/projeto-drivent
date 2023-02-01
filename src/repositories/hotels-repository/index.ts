@@ -48,7 +48,7 @@ async function getHotelsById(hotelId: number) {
     updatedAt: searchHotels[0].updatedAt.toISOString(),
     Rooms: searchRoom
   };
-  
+
   return obj;
 }
 
