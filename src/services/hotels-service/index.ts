@@ -1,7 +1,7 @@
 import hotelsRepository from "@/repositories/hotels-repository";
 
-async function getHotels() {
-  const response = await hotelsRepository.getHotels();
+async function getHotels(userId: number) {
+  const response = await hotelsRepository.getHotels(userId);
 
   return response;
 }

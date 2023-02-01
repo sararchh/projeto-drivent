@@ -1,30 +1,46 @@
 import { prisma } from "@/config";
+import { notFoundError } from "@/errors";
 import { Prisma } from "@prisma/client";
 
-async function getHotels() {
-  const searchBooking = await prisma.booking.findMany({});
-
-  const newArrayBooking = [];
-  for (let i = 0; i < searchBooking.length; i++) {
-    const searchRoom = await prisma.room.findMany({
-      where: {
-        id: searchBooking[i].roomId
+async function getHotels(userId: number) {
+  const responseTicketTypes = await prisma.ticketType.findMany({
+    include: {
+      Ticket: { select: { status: true } }
+    },
+    where: {
+      Ticket: {
+        every: {
+          Enrollment: {
+            userId
+          }
+        }
       }
-    });
-    newArrayBooking.push(searchRoom[0]);
+    }
+  });
+
+  if (responseTicketTypes === null) {
+    throw notFoundError();
   }
 
-  const newArrayHotels = [];
-  for (let i = 0; i < newArrayBooking.length; i++) {
-    const searchHotels = await prisma.hotel.findMany({
-      where: {
-        id: newArrayBooking[i].hotelId
-      }
-    });
-    newArrayHotels.push(searchHotels[0]);
+  const hotels = await prisma.hotel.findMany({});
+
+  if (hotels === null) {
+    throw { name: "HotelDoesNotExist" };
   }
 
-  return newArrayHotels;
+  const filterTickets = responseTicketTypes.filter(i => i.isRemote === true && i.includesHotel === true);
+
+  if (filterTickets === null) {
+    throw { name: "HotelDoesNotExist" };
+  }
+  
+  const filterPaidTickets = responseTicketTypes.filter(i => i.Ticket[0].status === "PAID");
+
+  if (filterPaidTickets === null) {
+    throw { name: "HotelDoesNotExist" };
+  }
+  
+  return hotels;
 }
 
 async function getHotelsById(hotelId: number) {
