@@ -21,18 +21,26 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function getHotelsById(req: Request, res: Response) {
+export async function getHotelsById(req: AuthenticatedRequest, res: Response) {
   try {
     const { hotelId } = req.params;
+    const { userId } = req;
 
     if (!hotelId) {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
 
-    const response = await hotelsService.getHotelsById(Number(hotelId));
+    const response = await hotelsService.getHotelsById(Number(hotelId), userId);
 
     return res.status(httpStatus.OK).send(response);
   } catch (error) {
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    if (error.name === "HotelDoesNotExist") {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
