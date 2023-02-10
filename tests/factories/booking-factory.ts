@@ -1,0 +1,18 @@
+import { prisma } from "@/config";
+
+export async function createBooking(userId: number, roomId: number) {
+  return await prisma.booking.create({
+    data: {
+      userId,
+      roomId
+    }
+  });
+}
+
+export async function searchBooking(userId: number) {
+  return await  await prisma.booking.findFirst({
+    where: {
+      userId: userId
+    }
+  });
+}

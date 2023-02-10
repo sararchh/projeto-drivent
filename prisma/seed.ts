@@ -16,7 +16,32 @@ async function main() {
     });
   }
 
-  console.log({ event });
+  let user = await prisma.user.findFirst();
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email: "sararocha878@gmail.com",
+        password: "$2b$12$umOQV47WqHPeL6ktDns67.8DaNf.U8V6FpM.K5n98pyyTRlYVCQZa",
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
+
+  let enrollment = await prisma.enrollment.findFirst();
+  if (!enrollment) {
+    enrollment = await prisma.enrollment.create({
+      data: {
+        name: "sararocha",
+        cpf: "18547235701",
+        birthday: dayjs().add(21, "days").toDate(),
+        phone: "155454854848",
+        userId: user.id,
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
 
   let ticketType = await prisma.ticketType.findFirst();
   if (!ticketType) {
@@ -31,6 +56,22 @@ async function main() {
       }
     });
   }
+
+
+  let ticket = await prisma.ticket.findFirst();
+  if (!ticket) {
+    ticket = await prisma.ticket.create({
+      data: {
+        ticketTypeId: ticketType.id,
+        enrollmentId: enrollment.id,
+        status: 'PAID',
+        createdAt: dayjs().add(21, "days").toDate(),
+        updatedAt: dayjs().add(21, "days").toDate(),
+      }
+    });
+  }
+
+ 
 
   let hotel = await prisma.hotel.findFirst();
   if (!hotel) {
@@ -49,8 +90,8 @@ async function main() {
     room = await prisma.room.create({
       data: {
         name: "Driven.t HOTEL",
-        capacity: 20,
-        hotelId: 1,
+        capacity: 2,
+        hotelId: hotel.id,
         createdAt: dayjs().add(21, "days").toDate(),
         updatedAt: dayjs().add(21, "days").toDate(),
       }
@@ -61,14 +102,17 @@ async function main() {
   if (!booking) {
     booking = await prisma.booking.create({
       data: {
-        userId: 4630,
-        roomId: 1,
+        userId: user.id,
+        roomId: room.id,
         createdAt: dayjs().add(21, "days").toDate(),
         updatedAt: dayjs().add(21, "days").toDate(),
       }
     });
   }
 }
+
+
+
 
 main()
   .catch((e) => {
